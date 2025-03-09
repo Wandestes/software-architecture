@@ -8,12 +8,10 @@ import (
 	"strings"
 )
 
-
 type ComputeHandler struct {
 	Input  io.Reader
 	Output io.Writer
 }
-
 
 func (h *ComputeHandler) Compute() error {
 	inputData, err := io.ReadAll(h.Input)
@@ -25,7 +23,6 @@ func (h *ComputeHandler) Compute() error {
 	if expression == "" {
 		return fmt.Errorf("empty expression")
 	}
-
 
 	result, err := ConvertPrefixToLisp(expression)
 	if err != nil {
@@ -43,12 +40,10 @@ func main() {
 
 	flag.Parse()
 
-
 	if *exprFlag != "" && *fileFlag != "" {
 		fmt.Fprintln(os.Stderr, "Error: specify either -e or -f, not both")
 		os.Exit(1)
 	}
-
 
 	var input io.Reader
 	if *exprFlag != "" {
@@ -65,7 +60,6 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Error: no input provided")
 		os.Exit(1)
 	}
-
 
 	var output io.Writer = os.Stdout
 	if *outFileFlag != "" {
@@ -84,6 +78,7 @@ func main() {
 		os.Exit(1)
 	}
 }
+
 func ConvertPrefixToLisp(expression string) (string, error) {
 	tokens := strings.Fields(expression)
 	if len(tokens) == 0 {
@@ -93,14 +88,16 @@ func ConvertPrefixToLisp(expression string) (string, error) {
 	stack := []string{}
 	for i := len(tokens) - 1; i >= 0; i-- {
 		token := tokens[i]
+		if token == "^" {
+			token = "pow" // Перетворення ^ на pow
+		}
+
 		if isOperator(token) {
 			if len(stack) < 2 {
 				return "", fmt.Errorf("invalid expression: not enough operands")
 			}
-			// Беремо останні два елементи зі стеку
 			op1, op2 := stack[len(stack)-1], stack[len(stack)-2]
-			stack = stack[:len(stack)-2] // Видаляємо їх
-			// Формуємо новий вираз у стилі Lisp
+			stack = stack[:len(stack)-2]
 			stack = append(stack, fmt.Sprintf("(%s %s %s)", token, op1, op2))
 		} else {
 			stack = append(stack, token)
@@ -114,10 +111,9 @@ func ConvertPrefixToLisp(expression string) (string, error) {
 	return stack[0], nil
 }
 
-// Перевіряє, чи є токен оператором
 func isOperator(token string) bool {
 	switch token {
-	case "+", "-", "*", "/":
+	case "+", "-", "*", "/", "pow", "^":
 		return true
 	default:
 		return false
