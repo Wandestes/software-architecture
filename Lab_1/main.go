@@ -1,53 +1,24 @@
 package main
 
 import (
-	"errors"
-	"strings"
+	"encoding/json"
+	"net/http"
+	"time"
 )
 
-// ConvertPrefixToLisp converts a prefix expression to Lisp-like notation.
-func ConvertPrefixToLisp(expression string) (string, error) {
-	if expression == "" {
-		return "", errors.New("empty expression")
-	}
-	tokens := strings.Fields(expression)
-	index := 0
-	result, err := parsePrefix(&tokens, &index)
-	if err != nil {
-		return "", err
-	}
-	return result, nil
+type TimeResponse struct {
+	Time string `json:"time"`
 }
 
-func parsePrefix(tokens *[]string, index *int) (string, error) {
-	if *index >= len(*tokens) {
-		return "", errors.New("invalid expression")
-	}
-	token := (*tokens)[*index]
-	*index++
-
-	if isOperator(token) {
-		left, err := parsePrefix(tokens, index)
-		if err != nil {
-			return "", err
-		}
-		right, err := parsePrefix(tokens, index)
-		if err != nil {
-			return "", err
-		}
-		if token == "^" {
-			token = "pow"
-		}
-		return "(" + token + " " + left + " " + right + ")", nil
-	}
-
-	return token, nil
+func timeHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	response := TimeResponse{Time: time.Now().Format(time.RFC3339)}
+	json.NewEncoder(w).Encode(response)
 }
 
-func isOperator(token string) bool {
-	switch token {
-	case "+", "-", "*", "/", "^":
-		return true
-	}
-	return false
+func main() {
+	http.HandleFunc("/time", timeHandler)
+	port := ":8795"
+	println("Server is running on http://localhost" + port)
+	http.ListenAndServe(port, nil)
 }
