@@ -26,6 +26,7 @@ func (h *ComputeHandler) Compute() error {
 		return fmt.Errorf("empty expression")
 	}
 
+	// Викликаємо функцію ConvertPrefixToLisp
 	result, err := ConvertPrefixToLisp(expression)
 	if err != nil {
 		return err
@@ -82,4 +83,11 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Error processing expression:", err)
 		os.Exit(1)
 	}
+}
+
+// Приклад реалізації ConvertPrefixToLisp
+func ConvertPrefixToLisp(expression string) (string, error) {
+	// Для тестування ми просто повертаємо переданий вираз.
+	// Реальну логіку для конвертації потрібно буде додати тут.
+	return fmt.Sprintf("(converted %s)", expression), nil
 }
