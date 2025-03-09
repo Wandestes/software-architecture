@@ -84,4 +84,42 @@ func main() {
 		os.Exit(1)
 	}
 }
+func ConvertPrefixToLisp(expression string) (string, error) {
+	tokens := strings.Fields(expression)
+	if len(tokens) == 0 {
+		return "", fmt.Errorf("empty expression")
+	}
 
+	stack := []string{}
+	for i := len(tokens) - 1; i >= 0; i-- {
+		token := tokens[i]
+		if isOperator(token) {
+			if len(stack) < 2 {
+				return "", fmt.Errorf("invalid expression: not enough operands")
+			}
+			// Беремо останні два елементи зі стеку
+			op1, op2 := stack[len(stack)-1], stack[len(stack)-2]
+			stack = stack[:len(stack)-2] // Видаляємо їх
+			// Формуємо новий вираз у стилі Lisp
+			stack = append(stack, fmt.Sprintf("(%s %s %s)", token, op1, op2))
+		} else {
+			stack = append(stack, token)
+		}
+	}
+
+	if len(stack) != 1 {
+		return "", fmt.Errorf("invalid expression: too many operands")
+	}
+
+	return stack[0], nil
+}
+
+// Перевіряє, чи є токен оператором
+func isOperator(token string) bool {
+	switch token {
+	case "+", "-", "*", "/":
+		return true
+	default:
+		return false
+	}
+}
