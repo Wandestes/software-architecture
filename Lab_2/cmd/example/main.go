@@ -8,13 +8,13 @@ import (
 	"strings"
 )
 
-// ComputeHandler виконує обробку вхідних даних та запис результату
+
 type ComputeHandler struct {
 	Input  io.Reader
 	Output io.Writer
 }
 
-// Compute читає вираз, обробляє його та записує результат
+
 func (h *ComputeHandler) Compute() error {
 	inputData, err := io.ReadAll(h.Input)
 	if err != nil {
@@ -26,7 +26,7 @@ func (h *ComputeHandler) Compute() error {
 		return fmt.Errorf("empty expression")
 	}
 
-	// Викликаємо функцію ConvertPrefixToLisp
+
 	result, err := ConvertPrefixToLisp(expression)
 	if err != nil {
 		return err
@@ -43,13 +43,13 @@ func main() {
 
 	flag.Parse()
 
-	// Перевіряємо, чи передано одночасно -e та -f (це помилка)
+
 	if *exprFlag != "" && *fileFlag != "" {
 		fmt.Fprintln(os.Stderr, "Error: specify either -e or -f, not both")
 		os.Exit(1)
 	}
 
-	// Визначаємо джерело введення
+
 	var input io.Reader
 	if *exprFlag != "" {
 		input = strings.NewReader(*exprFlag)
@@ -66,7 +66,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Визначаємо місце виведення
+
 	var output io.Writer = os.Stdout
 	if *outFileFlag != "" {
 		file, err := os.Create(*outFileFlag)
@@ -85,9 +85,3 @@ func main() {
 	}
 }
 
-// Приклад реалізації ConvertPrefixToLisp
-func ConvertPrefixToLisp(expression string) (string, error) {
-	// Для тестування ми просто повертаємо переданий вираз.
-	// Реальну логіку для конвертації потрібно буде додати тут.
-	return fmt.Sprintf("(converted %s)", expression), nil
-}
