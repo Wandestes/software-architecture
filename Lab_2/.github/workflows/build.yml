@@ -1,0 +1,33 @@
+name: CI Build and Test
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21
+
+      - name: Install dependencies
+        run: make deps  # Викликає команду з Makefile (якщо така є)
+
+      - name: Run tests
+        run: make test  # Запускає тести через Makefile
+
+      - name: Build project
+        run: make build  # Компілює вашу програму
