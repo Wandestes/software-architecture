@@ -12,20 +12,25 @@ func ConvertPrefixToLisp(expression string) (string, error) {
 	}
 	tokens := strings.Fields(expression)
 	index := 0
-	result, err := parsePrefix(&tokens, &index)
+	result, err := parsePrefix(tokens, &index)
 	if err != nil {
 		return "", err
 	}
 	return result, nil
 }
 
-func parsePrefix(tokens *[]string, index *int) (string, error) {
-	if *index >= len(*tokens) {
+// parsePrefix recursively parses a prefix expression.
+func parsePrefix(tokens []string, index *int) (string, error) {
+	// If we've reached the end of the token list, return an error
+	if *index >= len(tokens) {
 		return "", errors.New("invalid expression")
 	}
-	token := (*tokens)[*index]
+
+	// Get the current token and increment the index
+	token := tokens[*index]
 	*index++
 
+	// If the token is an operator, parse the left and right operands recursively
 	if isOperator(token) {
 		left, err := parsePrefix(tokens, index)
 		if err != nil {
@@ -35,15 +40,19 @@ func parsePrefix(tokens *[]string, index *int) (string, error) {
 		if err != nil {
 			return "", err
 		}
+
+		// Handle the exponentiation operator (^), convert it to "pow"
 		if token == "^" {
 			token = "pow"
 		}
 		return "(" + token + " " + left + " " + right + ")", nil
 	}
 
+	// If the token is not an operator, return it as a string (operand)
 	return token, nil
 }
 
+// isOperator checks if the token is a valid operator.
 func isOperator(token string) bool {
 	switch token {
 	case "+", "-", "*", "/", "^":
