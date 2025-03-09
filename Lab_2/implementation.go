@@ -21,7 +21,12 @@ func ConvertPrefixToLisp(expression string) (string, error) {
 		return "", err
 	}
 
-	// Ensure the parsed result does not have extra prefixes or issues.
+	// Ensure that we don't have leftover tokens
+	if index != len(tokens) {
+		return "", errors.New("invalid expression")
+	}
+
+	// Return the result (without "converted" or any extra text)
 	return result, nil
 }
 
