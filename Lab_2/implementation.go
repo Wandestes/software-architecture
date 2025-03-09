@@ -10,12 +10,18 @@ func ConvertPrefixToLisp(expression string) (string, error) {
 	if expression == "" {
 		return "", errors.New("empty expression")
 	}
+
+	// Split the expression into tokens
 	tokens := strings.Fields(expression)
 	index := 0
+
+	// Parse the tokens recursively
 	result, err := parsePrefix(tokens, &index)
 	if err != nil {
 		return "", err
 	}
+
+	// Ensure the parsed result does not have extra prefixes or issues.
 	return result, nil
 }
 
@@ -45,6 +51,8 @@ func parsePrefix(tokens []string, index *int) (string, error) {
 		if token == "^" {
 			token = "pow"
 		}
+
+		// Format the result as a Lisp expression
 		return "(" + token + " " + left + " " + right + ")", nil
 	}
 
