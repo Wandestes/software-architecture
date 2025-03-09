@@ -26,7 +26,7 @@ func ConvertPrefixToLisp(expression string) (string, error) {
 		return "", errors.New("invalid expression")
 	}
 
-	// Return the result (without "converted" or any extra text)
+	// Return the result
 	return result, nil
 }
 
